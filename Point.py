@@ -25,6 +25,25 @@ class Point:
     def z(self):
         return self._z
 
+    @x.setter
+    def x(self, x_value):
+        if type(x_value) != int:
+            raise TypeError("x value can only be an int not a {}".type(x_value))
+        self._x = x_value
+
+
+    @y.setter
+    def y(self, y_value):
+        if type(y_value) != int:
+            raise TypeError("y value can only be an int not a {}".type(y_value))
+        self._y = y_value
+
+    @z.setter
+    def z(self, z_value):
+        if type(z_value) != int:
+            raise TypeError("z value can only be an int not a {}".type(z_value))
+        self._z = z_value
+
     def __repr__(self):
         if self._z:
             return "({}, {}, {})".format(self._x, self._y, self._z)
@@ -37,13 +56,14 @@ class Point:
         else:
             return "({}, {})".format(self._x, self._y)
 
-
     def __sub__(self, other):
         """
         finds the Euclidean distance between two points
         :param other:
         :return: distance
         """
-        d_square = (self.x - other.x)**2 + (self.y - other.y)**2
+        d_square = (self._x - other.x)**2 + (self._y - other.y)**2
         return sqrt(d_square)
+
+
 

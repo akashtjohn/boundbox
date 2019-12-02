@@ -1,3 +1,3 @@
 
-class CannotCropImage:
+class CannotCropImage(Exception):
     pass

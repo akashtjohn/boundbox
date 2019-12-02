@@ -1,62 +1,64 @@
+import cv2
+
 from Point import Point
 from BoundBox_utils import min_value, max_value
 from Exceptions import CannotCropImage
 
 
-class BoundBox2D:
+class BoundBox:
     """
 
-    p1                       p2
+    _p1                       _p2
        ######################
        #                    #
        #                    #
        #                    #
        #                    #
        ######################
-    p4                       p3
+    _p4                       _p3
 
     """
 
-    def __init__(self, p1, p2, p3, p4, text_value=None):
+    def __init__(self, _p1, _p2, _p3, _p4, text_value=''):
 
-        self._p1 = p1
-        self._p2 = p2
-        self._p3 = p3
-        self._p4 = p4
+        self._p1 = _p1
+        self._p2 = _p2
+        self._p3 = _p3
+        self._p4 = _p4
         self._text_value = text_value
 
     def __str__(self):
-        return "p1: {},     p2: {},     p3: {}, " \
-               "    p4 {}".format(self._p1, self._p2, self._p3, self._p4)
+        return "_p1: {},     _p2: {},     _p3: {}, " \
+               "    _p4 {}".format(self._p1, self._p2, self._p3, self._p4)
 
     def __repr__(self):
         return "{}".format(self._text_value)
 
     def __add__(self, other):
 
-        p1_x = min_value(self.p1.x, other.p1.x)
-        p1_y = min_value(self.p1.y, other.p1.y)
+        p1_x = min_value(self._p1.x, other.p1.x)
+        p1_y = min_value(self._p1.y, other.p1.y)
 
         p1 = Point(p1_x, p1_y)
 
-        p2_x = max_value(self.p2.x, other.p2.x)
-        p2_y = min_value(self.p2.y, other.p2.y)
+        p2_x = max_value(self._p2.x, other.p2.x)
+        p2_y = min_value(self._p2.y, other.p2.y)
 
         p2 = Point(p2_x, p2_y)
 
-        p3_x = max_value(self.p3.x, other.p3.x)
-        p3_y = max_value(self.p3.y, other.p3.y)
+        p3_x = max_value(self._p3.x, other.p3.x)
+        p3_y = max_value(self._p3.y, other.p3.y)
 
         p3 = Point(p3_x, p3_y)
 
-        p4_x = min_value(self.p4.x, other.p4.x)
-        p4_y = max_value(self.p4.y, other.p4.y)
+        p4_x = min_value(self._p4.x, other.p4.x)
+        p4_y = max_value(self._p4.y, other.p4.y)
 
         p4 = Point(p4_x, p4_y)
 
-        new_text = self.text_value + ' ' + other.text_value
+        new_text = self._text_value + ' ' + other.text_value
 
-        return BoundBox2D(p1, p2, p3, p4, new_text)
+        return BoundBox(p1, p2, p3, p4, new_text.strip())
 
     @classmethod
     def create_box_from_corners(cls, corner_1, corner_2, text_value=None):
@@ -79,7 +81,7 @@ class BoundBox2D:
         p2 = Point(corner_1.x, corner_2.y)
         p4 = Point(corner_2.x, corner_1.y)
 
-        return BoundBox2D(p1, p2, p3, p4, text_value)
+        return BoundBox(p1, p2, p3, p4, text_value)
 
     @classmethod
     def create_box(cls, x1, y1, x2, y2, x3, y3, x4, y4, text_value=None):
@@ -119,16 +121,21 @@ class BoundBox2D:
 
     def crop_image(self, img):
 
-        ymin_value = min_value(self.p1.y, self.p2.y)
-        ymax_value = max_value(self.p3.y, self.p4.y)
-        xmin_value = min_value(self.p1.x, self.p4.x)
-        xmax_value = max_value(self.p2.x, self.p3.x)
+        ymin_value = min_value(self._p1.y, self._p2.y)
+        ymax_value = max_value(self._p3.y, self._p4.y)
+        xmin_value = min_value(self._p1.x, self._p4.x)
+        xmax_value = max_value(self._p2.x, self._p3.x)
 
         if ymin_value > ymax_value or xmin_value > xmax_value:
-            raise CannotCropImage('the image cannot be cropped because the edges does not create a rectangle')
-        croped_img = img[ymin_value:ymax_value, xmin_value:xmax_value]
+            raise CannotCropImage('the image cannot be cropped because the edges does not create a proper rectangle')
 
-        return croped_img
+        cropped_img = img[ymin_value:ymax_value, xmin_value:xmax_value]
+
+        return cropped_img
+
+    def draw_rectangle(self, img):
+        cv2.rectangle(img, (self.p1.x, self.p1.y), (self.p3.x, self.p3.y), (0, 255, 0), 2)
+        return img
 
     @property
     def p1(self):
