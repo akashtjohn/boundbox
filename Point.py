@@ -25,6 +25,19 @@ class Point:
     def z(self):
         return self._z
 
+    def __repr__(self):
+        if self._z:
+            return "({}, {}, {})".format(self._x, self._y, self._z)
+        else:
+            return "({}, {})".format(self._x, self._y)
+
+    def __str__(self):
+        if self._z:
+            return "({}, {}, {})".format(self._x, self._y, self._z)
+        else:
+            return "({}, {})".format(self._x, self._y)
+
+
     def __sub__(self, other):
         """
         finds the Euclidean distance between two points

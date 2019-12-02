@@ -12,7 +12,6 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(p1.y, 3)
         self.assertEqual(p1.z, 7)
 
-
     def test_distance(self):
 
         p1 = Point(3, 5)
