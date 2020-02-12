@@ -1,11 +1,11 @@
 import unittest
 import urllib
 import os
+import numpy as np
 import cv2
 from pytesseract import image_to_data, Output
 from BoundBox import BoundBox
 from Point import Point
-
 
 test_image_url = "https://www.pyimagesearch.com/wp-content/uploads/2017/06/example_01.png"
 
@@ -14,18 +14,40 @@ class MyTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """
+        downloads the test image
+        :return:
+        """
 
-        test_files = os.path.join(os.getcwd(), 'test_files')
-        os.makedirs(test_files, exist_ok=True)
+        cls.test_files = os.path.join(os.getcwd(), 'test_files')
+        os.makedirs(cls.test_files, exist_ok=True)
 
         #test image of pytesseract
-        test_image_pytesseract = os.path.join(test_files, 'pytesseract_test')
+        test_image_pytesseract = os.path.join(cls.test_files, 'pytesseract_test')
         urllib.request.urlretrieve(test_image_url, test_image_pytesseract)
 
         cls.test_image_pytesseract = test_image_pytesseract
 
-    def test_addition(self):
+    @classmethod
+    def tearDownClass(cls):
+        """
+        removes the created files for the test
+        :return:
+        """
 
+        files = os.listdir(cls.test_files)
+        for file in files:
+            full_path = os.path.join(cls.test_files, file)
+            os.remove(full_path)
+
+        os.rmdir(cls.test_files)
+
+    def test_addition(self):
+        """
+        test of + operator overloading,
+        addition of two boxes to generate a new box
+        :return:
+        """
         p1 = Point(0, 0)
         p2 = Point(2, 0)
         p3 = Point(2, 2)
@@ -62,6 +84,25 @@ class MyTestCase(unittest.TestCase):
             merged_box += box
 
         self.assertEqual(merged_box.text_value, 'Noisyimage to test Tesseract OCR')
+
+    def test_image_from_contour(self):
+        contour_array = np.array([[[429, 48]], [[113, 96]], [[129, 415]], [[430, 423]]])
+        box = BoundBox.box_from_contour(contour_array)
+
+        self.assertEqual(box.p1.x, 113)
+        self.assertEqual(box.p1.y, 96)
+        self.assertEqual(box.p2.x, 429)
+        self.assertEqual(box.p2.y, 48)
+        self.assertEqual(box.p3.x, 430)
+        self.assertEqual(box.p3.y, 423)
+        self.assertEqual(box.p4.x, 129)
+        self.assertEqual(box.p4.y, 415)
+
+    def test_np_array(self):
+        np_array = np.array([[113, 96], [429, 48], [430, 423], [129, 415]])
+        box = BoundBox.box_from_array(np_array)
+
+        self.assertListEqual(np_array.tolist(), box.np_array.tolist())
 
 
 if __name__ == '__main__':

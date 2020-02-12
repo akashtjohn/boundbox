@@ -25,6 +25,14 @@ class Point:
     def z(self):
         return self._z
 
+    @property
+    def sum(self):
+        return self._x + self._y + self._z
+
+    @property
+    def diff_of_x_y(self):
+        return self._x - self._y
+
     @x.setter
     def x(self, x_value):
         if type(x_value) != int:
@@ -62,6 +70,7 @@ class Point:
         :param other:
         :return: distance
         """
+        # TODO: include sub for z
         d_square = (self._x - other.x)**2 + (self._y - other.y)**2
         return sqrt(d_square)
 
