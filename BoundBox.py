@@ -272,7 +272,10 @@ class BoundBox:
 
         if anti_clock_wise:
             angle *= -1
-            
+
+        if angle % (2*np.pi) == 0:
+            return
+
         coordinates = self.np_array.transpose()
 
         centroid = self.centroid
@@ -327,6 +330,18 @@ class BoundBox:
         return warp
 
     def change_ratio(self, ratio_w, ratio_h):
+
+        self._p1.x = int(self._p1.x * ratio_w)
+        self._p2.x = int(self._p2.x * ratio_w)
+        self._p3.x = int(self._p3.x * ratio_w)
+        self._p4.x = int(self._p4.x * ratio_w)
+
+        self._p1.y = int(self._p1.y * ratio_h)
+        self._p2.y = int(self._p2.y * ratio_h)
+        self._p3.y = int(self._p3.y * ratio_h)
+        self._p4.y = int(self._p4.y * ratio_h)
+
+    def scale_box(self, ratio_w, ratio_h):
 
         self._p1.x = round(self._p1.x / ratio_w)
         self._p2.x = round(self._p2.x * ratio_w)
