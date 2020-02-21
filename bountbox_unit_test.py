@@ -1,8 +1,10 @@
 import unittest
-import urllib
+import requests
 import os
+from math import radians
 import numpy as np
 import cv2
+import warnings
 from pytesseract import image_to_data, Output
 from BoundBox import BoundBox
 from Point import Point
@@ -12,6 +14,7 @@ test_image_url = "https://www.pyimagesearch.com/wp-content/uploads/2017/06/examp
 
 class MyTestCase(unittest.TestCase):
 
+    test_files = ''
     @classmethod
     def setUpClass(cls):
         """
@@ -22,9 +25,22 @@ class MyTestCase(unittest.TestCase):
         cls.test_files = os.path.join(os.getcwd(), 'test_files')
         os.makedirs(cls.test_files, exist_ok=True)
 
-        #test image of pytesseract
-        test_image_pytesseract = os.path.join(cls.test_files, 'pytesseract_test')
-        urllib.request.urlretrieve(test_image_url, test_image_pytesseract)
+        # test image of pytesseract
+        file_type = test_image_url.split('.')[-1]
+        test_image_pytesseract = os.path.join(cls.test_files, 'pytesseract_test.'+file_type)
+
+        try:
+            test_image = requests.get(test_image_url, timeout=10)
+            if test_image.status_code == 200:
+                with open(test_image_pytesseract, 'wb') as f:
+                    f.write(test_image.content)
+            else:
+                warnings.warn('could not download image properly skipping pytesseract test')
+                test_image_pytesseract = None
+
+        except requests.exceptions.ConnectionError:
+            warnings.warn('could not connect to the image url to download, skipping pytesseract test')
+            test_image_pytesseract = None
 
         cls.test_image_pytesseract = test_image_pytesseract
 
@@ -74,6 +90,9 @@ class MyTestCase(unittest.TestCase):
 
     def test_pytesseract(self):
 
+        if not self.test_image_pytesseract:
+            warnings.warn('avoided pytesseract test')
+            return
         img = cv2.imread(self.test_image_pytesseract)
         data = image_to_data(img, output_type=Output.DICT)
 
@@ -98,11 +117,92 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(box.p4.x, 129)
         self.assertEqual(box.p4.y, 415)
 
-    def test_np_array(self):
-        np_array = np.array([[113, 96], [429, 48], [430, 423], [129, 415]])
+    def test_sorting(self):
+        np_array = [[4, 2], [2, 4], [8, 6], [6, 8]]
         box = BoundBox.box_from_array(np_array)
 
-        self.assertListEqual(np_array.tolist(), box.np_array.tolist())
+        self.assertEqual(box.p1.x, 4)
+        self.assertEqual(box.p1.y, 2)
+        self.assertEqual(box.p2.x, 8)
+        self.assertEqual(box.p2.y, 6)
+        self.assertEqual(box.p3.x, 6)
+        self.assertEqual(box.p3.y, 8)
+        self.assertEqual(box.p4.x, 2)
+        self.assertEqual(box.p4.y, 4)
+
+        np_array = [[4, 2], [2, 4], [8, 6], [6, 9]]
+        box = BoundBox.box_from_array(np_array)
+        self.assertEqual(box.p1.x, 4)
+        self.assertEqual(box.p1.y, 2)
+        self.assertEqual(box.p2.x, 8)
+        self.assertEqual(box.p2.y, 6)
+        self.assertEqual(box.p3.x, 6)
+        self.assertEqual(box.p3.y, 9)
+        self.assertEqual(box.p4.x, 2)
+        self.assertEqual(box.p4.y, 4)
+
+    def test_np_array(self):
+        array = [[113, 96], [429, 48], [430, 423], [129, 415]]
+        box = BoundBox.box_from_array(array)
+
+        self.assertListEqual(array, box.np_array.tolist())
+
+    def test_length_breadth(self):
+
+        np_array = [[4, 2], [2, 4], [8, 6], [6, 8]]
+        box = BoundBox.box_from_array(np_array)
+        self.assertEqual(round(box.length, 2), 5.66)
+        self.assertEqual(round(box.breadth, 2), 2.83)
+
+    def test_rotation(self):
+
+        # simple check
+        box_1 = BoundBox.box_from_array([[2, 2], [2, 4], [6, 2], [6, 4]])
+        box_1.rotate(radians(90), anti_clock_wise=False)
+        expected_result_1 = [[3, 1], [5, 1], [5, 5], [3, 5]]
+        self.assertListEqual(box_1.np_array.tolist(), expected_result_1)
+
+        # clock wise rotation
+        box_2 = BoundBox.box_from_array([[100, 100], [200, 100], [200, 400], [100, 400]])
+        box_2.rotate(radians(45), anti_clock_wise=False)
+        expected_result_2 = [[221, 109], [291, 179], [79, 391], [9, 321]]
+        self.assertListEqual(box_2.np_array.tolist(), expected_result_2)
+
+        # anti clock wise rotation
+        box_3 = BoundBox.box_from_array([[100, 100], [200, 100], [200, 400], [100, 400]])
+        box_3.rotate(radians(45), anti_clock_wise=True)
+        expected_result_3 = [[79, 109], [291, 321], [221, 391], [9, 179]]
+        self.assertListEqual(box_3.np_array.tolist(), expected_result_3)
+
+    def test_centroid(self):
+
+        box_1 = BoundBox.box_from_array([[100, 100], [500, 100], [500, 500], [100, 500]])
+        centroid_1 = box_1.centroid
+
+        self.assertEqual(centroid_1.x, 300)
+        self.assertEqual(centroid_1.y, 300)
+
+        box_2 = BoundBox.box_from_array([[107, 95], [352, 117], [420, 615], [80, 590]])
+        centroid_2 = box_2.centroid
+
+        self.assertEqual(centroid_2.x, 240)
+        self.assertEqual(centroid_2.y, 368)
+
+        box_3 = BoundBox.box_from_array([[4, 2], [2, 4], [8, 6], [6, 9]])
+        centroid_3 = box_3.centroid
+
+        self.assertEqual(centroid_3.x, 5)
+        self.assertEqual(centroid_3.y, 5)
+
+    def test_box_from_center(self):
+        center_x = 150
+        center_y = 250
+        length = 100
+        breadth = 300
+        angle = radians(45)
+        box = BoundBox.from_center(center_x, center_y, length, breadth, angle)
+        expected_result = [[221, 109], [291, 179], [79, 391], [9, 321]]
+        self.assertListEqual(box.np_array.tolist(), expected_result)
 
 
 if __name__ == '__main__':

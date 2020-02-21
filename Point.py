@@ -36,7 +36,7 @@ class Point:
     @x.setter
     def x(self, x_value):
         if type(x_value) != int:
-            raise TypeError("x value can only be an int not a {}".type(x_value))
+            raise TypeError("x value can only be an int not a {}".format(type(x_value)))
         self._x = x_value
 
 
