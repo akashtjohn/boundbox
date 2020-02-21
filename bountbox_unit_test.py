@@ -204,6 +204,12 @@ class MyTestCase(unittest.TestCase):
         expected_result = [[221, 109], [291, 179], [79, 391], [9, 321]]
         self.assertListEqual(box.np_array.tolist(), expected_result)
 
+    def test_change_ratio(self):
+        box = BoundBox.box_from_array([[100, 100], [200, 100], [200, 400], [100, 400]])
+        box.change_ratio(1.5, 2)
+        expected_result = [[150, 200], [300, 200], [300, 800], [150, 800]]
+        self.assertListEqual(box.np_array.tolist(), expected_result)
+
 
 if __name__ == '__main__':
     unittest.main()

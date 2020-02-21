@@ -7,8 +7,6 @@ from BoundBox_utils import min_value, max_value
 from Exceptions import CannotCropImage
 
 
-# TODO : unit test for change ratio
-# TODO : setter for points and checks internal getters
 class BoundBox:
     """
 
@@ -49,7 +47,6 @@ class BoundBox:
         :param p4: point 4
         :return: tuple of corners in sorted order
         TODO : implement a mechanism to check points are on the same line
-        TODO : logic for 3 points with same sum or diff
         """
 
         # if any of the values is null return without sorting
@@ -77,14 +74,16 @@ class BoundBox:
         if len(min_sum_index) > 1:
             # if more than one value with the same min sum exists we take the one with minimum y - x
 
-            top_left_index = min_sum_index[0] if p_diff[min_sum_index[0]] < p_diff[min_sum_index[1]] else min_sum_index[1]
+            top_left_index = min_sum_index[0] if p_diff[min_sum_index[0]] < p_diff[min_sum_index[1]] \
+                else min_sum_index[1]
 
         else:
             top_left_index = min_sum_index[0]
 
         if len(max_sum_index) > 1:
             # if more than one value with the same max sum exists we take the one with maximum y - x bottom right
-            bottom_right_index = max_sum_index[0] if p_diff[max_sum_index[0]] > p_diff[max_sum_index[1]] else max_sum_index[1]
+            bottom_right_index = max_sum_index[0] if p_diff[max_sum_index[0]] > p_diff[max_sum_index[1]] \
+                else max_sum_index[1]
         else:
             bottom_right_index = max_sum_index[0]
 
@@ -268,7 +267,8 @@ class BoundBox:
     def rotate(self, angle, anti_clock_wise=False):
         """
         rotates the current box the given degree in radian in anticlockwise direction
-        mechanism refer to this link : https://math.stackexchange.com/questions/1917449/rotate-polygon-around-center-and-get-the-coordinates
+        mechanism refer to this link :
+         https://math.stackexchange.com/questions/1917449/rotate-polygon-around-center-and-get-the-coordinates
         :param angle: angle in radian
         :param anti_clock_wise: if set to true rotate it clockwise
         :return:
@@ -298,11 +298,11 @@ class BoundBox:
 
     def perspective_wrap(self, img):
 
-        width_1 = self.p3 - self.p4
-        width_2 = self.p2 - self.p1
+        width_1 = self._p3 - self._p4
+        width_2 = self._p2 - self._p1
 
-        height_1 = self.p3 - self.p2
-        height_2 = self.p4 - self.p1
+        height_1 = self._p3 - self._p2
+        height_2 = self._p4 - self._p1
 
         # take the maximum of the width and height for the new image
 
@@ -320,10 +320,10 @@ class BoundBox:
         # calculate the perspective transform matrix and warp
         # the perspective to grab the screen
         rect = np.zeros((4, 2), dtype="float32")
-        rect[0] = [self.p1.x, self.p1.y]
-        rect[1] = [self.p2.x, self.p2.y]
-        rect[2] = [self.p3.x, self.p3.y]
-        rect[3] = [self.p4.x, self.p4.y]
+        rect[0] = [self._p1.x, self._p1.y]
+        rect[1] = [self._p2.x, self._p2.y]
+        rect[2] = [self._p3.x, self._p3.y]
+        rect[3] = [self._p4.x, self._p4.y]
 
         m = cv2.getPerspectiveTransform(rect, dst)
         warp = cv2.warpPerspective(img, m, (max_width, max_height))
@@ -357,8 +357,8 @@ class BoundBox:
         return cropped_img
 
     def draw_box(self, img):
-        points = np.array([[self.p1.x, self.p1.y], [self.p2.x, self.p2.y], [self.p3.x, self.p3.y],
-                           [self.p4.x, self.p4.y]])
+        points = np.array([[self._p1.x, self._p1.y], [self._p2.x, self._p2.y], [self._p3.x, self._p3.y],
+                           [self._p4.x, self._p4.y]])
         cv2.polylines(img, np.int32([points]), True, (0, 255, 0), thickness=1)
         return img
 
@@ -378,6 +378,30 @@ class BoundBox:
     def p4(self):
         return self._p4
 
+    @p1.setter
+    def p1(self, p):
+        if isinstance(p, Point):
+            raise TypeError("point should be an instance of Point Class")
+        self._p1 = p
+
+    @p2.setter
+    def p2(self, p):
+        if isinstance(p, Point):
+            raise TypeError("point should be an instance of Point Class")
+        self._p2 = p
+
+    @p3.setter
+    def p3(self, p):
+        if isinstance(p, Point):
+            raise TypeError("point should be an instance of Point Class")
+        self._p3 = p
+
+    @p4.setter
+    def p4(self, p):
+        if isinstance(p, Point):
+            raise TypeError("point should be an instance of Point Class")
+        self._p4 = p
+
     @property
     def text_value(self):
         return self._text_value
@@ -385,10 +409,10 @@ class BoundBox:
     @property
     def np_array(self):
         box = np.zeros((4, 2), dtype="int32")
-        box[0] = [self.p1.x, self.p1.y]
-        box[1] = [self.p2.x, self.p2.y]
-        box[2] = [self.p3.x, self.p3.y]
-        box[3] = [self.p4.x, self.p4.y]
+        box[0] = [self._p1.x, self._p1.y]
+        box[1] = [self._p2.x, self._p2.y]
+        box[2] = [self._p3.x, self._p3.y]
+        box[3] = [self._p4.x, self._p4.y]
 
         return box
 
@@ -442,5 +466,5 @@ class BoundBox:
 
     @property
     def breadth(self):
-        breadth = self.p1 - self.p4
+        breadth = self._p1 - self._p4
         return breadth
