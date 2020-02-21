@@ -207,7 +207,7 @@ class MyTestCase(unittest.TestCase):
     def test_change_ratio(self):
         box = BoundBox.box_from_array([[100, 100], [200, 100], [200, 400], [100, 400]])
         box.change_ratio(1.5, 2)
-        expected_result = [[150, 200], [300, 200], [300, 800], [150, 800]]
+        expected_result = [[67, 50], [300, 50], [300, 800], [67, 800]]
         self.assertListEqual(box.np_array.tolist(), expected_result)
 
 

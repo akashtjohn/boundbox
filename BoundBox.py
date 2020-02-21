@@ -104,11 +104,11 @@ class BoundBox:
         top_right = remaining_box[top_right_index]
         bottom_left = remaining_box[bottom_left_index]
 
-        p1 = Point(top_left[0], top_left[1])
-        p2 = Point(top_right[0], top_right[1])
+        p1 = Point(int(top_left[0]), int(top_left[1]))
+        p2 = Point(int(top_right[0]), int(top_right[1]))
 
-        p3 = Point(bottom_right[0], bottom_right[1])
-        p4 = Point(bottom_left[0], bottom_left[1])
+        p3 = Point(int(bottom_right[0]), int(bottom_right[1]))
+        p4 = Point(int(bottom_left[0]), int(bottom_left[1]))
 
         return p1, p2, p3, p4
 
@@ -225,11 +225,7 @@ class BoundBox:
             raise IndexError('need to approximate the contour to 4 sided polygon, currently contains {} '
                              'sides'. format(len(array)))
 
-        p1 = Point(array[0][0], array[0][1])
-        p2 = Point(array[1][0], array[1][1])
-
-        p3 = Point(array[2][0], array[2][1])
-        p4 = Point(array[3][0], array[3][1])
+        p1, p2, p3, p4 = cls.array_to_points(array)
 
         return cls(p1, p2, p3, p4)
 
@@ -332,15 +328,15 @@ class BoundBox:
 
     def change_ratio(self, ratio_w, ratio_h):
 
-        self._p1.x = int(self._p1.x * ratio_w)
-        self._p2.x = int(self._p2.x * ratio_w)
-        self._p3.x = int(self._p3.x * ratio_w)
-        self._p4.x = int(self._p4.x * ratio_w)
+        self._p1.x = round(self._p1.x / ratio_w)
+        self._p2.x = round(self._p2.x * ratio_w)
+        self._p3.x = round(self._p3.x * ratio_w)
+        self._p4.x = round(self._p4.x / ratio_w)
 
-        self._p1.y = int(self._p1.y * ratio_h)
-        self._p2.y = int(self._p2.y * ratio_h)
-        self._p3.y = int(self._p3.y * ratio_h)
-        self._p4.y = int(self._p4.y * ratio_h)
+        self._p1.y = round(self._p1.y / ratio_h)
+        self._p2.y = round(self._p2.y / ratio_h)
+        self._p3.y = round(self._p3.y * ratio_h)
+        self._p4.y = round(self._p4.y * ratio_h)
 
     def crop_image(self, img):
 
