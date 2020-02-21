@@ -1,5 +1,5 @@
 import numpy as np
-from Point import Point
+from .Point_class import Point
 
 
 class Line:

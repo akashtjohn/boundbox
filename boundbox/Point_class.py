@@ -1,5 +1,5 @@
 from math import sqrt
-import numpy as np
+
 
 class Point:
 
@@ -35,21 +35,20 @@ class Point:
 
     @x.setter
     def x(self, x_value):
-        if not isinstance(x_value, int):
+        if not isinstance(x_value, (int, )):
             raise TypeError("x value can only be an int not a {}".format(type(x_value)))
         self._x = x_value
 
-
     @y.setter
     def y(self, y_value):
-        if not isinstance(y_value, (int)):
-            raise TypeError("y value can only be an int not a {}".type(y_value))
+        if not isinstance(y_value, (int, )):
+            raise TypeError("y value can only be an int not a {}".format(type(y_value)))
         self._y = y_value
 
     @z.setter
     def z(self, z_value):
         if not isinstance(z_value, (int, )):
-            raise TypeError("z value can only be an int not a {}".type(z_value))
+            raise TypeError("z value can only be an int not a {}".format(type(z_value)))
         self._z = z_value
 
     def __repr__(self):

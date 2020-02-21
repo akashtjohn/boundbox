@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
 from math import sin, cos
-from Point import Point
-from Line import Line
-from BoundBox_utils import min_value, max_value
-from Exceptions import CannotCropImage
+from .Point_class import Point
+from .Line_class import Line
+from .BoundBox_utils import min_value, max_value
+from .Exceptions import CannotCropImage
 
 
 class BoundBox:

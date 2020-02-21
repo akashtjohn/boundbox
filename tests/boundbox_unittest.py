@@ -6,8 +6,8 @@ import numpy as np
 import cv2
 import warnings
 from pytesseract import image_to_data, Output
-from BoundBox import BoundBox
-from Point import Point
+from ..boundbox.BoundBox_class import BoundBox
+from ..boundbox.Point_class import Point
 
 test_image_url = "https://www.pyimagesearch.com/wp-content/uploads/2017/06/example_01.png"
 
