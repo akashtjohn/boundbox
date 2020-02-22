@@ -7,7 +7,7 @@ setuptools.setup(
     name="boundbox", 
     version="0.0.1",
     author="Akash Thomas",
-    author_email="akash.thomas1618@gmail.com",
+    author_email="akashthomasjohn@gmail.com",
     description="Package for bounding boxes",
     long_description=long_description,
     long_description_content_type="text/markdown",

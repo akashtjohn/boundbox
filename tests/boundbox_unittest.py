@@ -1,13 +1,17 @@
 import unittest
 import requests
 import os
-from math import radians
+from math import radians, degrees
 import numpy as np
 import cv2
 import warnings
 from pytesseract import image_to_data, Output
-from ..boundbox.BoundBox_class import BoundBox
-from ..boundbox.Point_class import Point
+
+import sys
+sys.path.insert(0, '..')
+
+from boundbox.BoundBox_class import BoundBox
+from boundbox.Point_class import Point
 
 test_image_url = "https://www.pyimagesearch.com/wp-content/uploads/2017/06/example_01.png"
 
@@ -221,6 +225,15 @@ class MyTestCase(unittest.TestCase):
         box.change_ratio(1.5, 2)
         expected_result = [[150, 200], [300, 200], [300, 800], [150, 800]]
         self.assertListEqual(box.np_array.tolist(), expected_result)
+
+    def test_box_angle(self):
+        box1 = BoundBox.box_from_array([[10, 10], [40, 15], [30, 30], [20, 20]])
+        angle1 = box1.angle
+        self.assertEqual(degrees(angle1), 45)
+
+        box2 = BoundBox.box_from_array([[100, 100], [200, 100], [200, 400], [100, 400]])
+        angle2 = box2.angle
+        self.assertEqual(degrees(angle2), 0)
 
 
 if __name__ == '__main__':

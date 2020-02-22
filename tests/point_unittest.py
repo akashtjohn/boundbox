@@ -1,5 +1,9 @@
 import unittest
-from ..src.Point_class import Point
+
+import sys
+sys.path.insert(0, '..')
+
+from boundbox.Point_class import Point
 
 
 class MyTestCase(unittest.TestCase):

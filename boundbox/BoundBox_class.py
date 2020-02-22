@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
-from math import sin, cos
+from math import sin, cos, atan
+import matplotlib.pyplot as plt
 from .Point_class import Point
 from .Line_class import Line
 from .BoundBox_utils import min_value, max_value
@@ -10,15 +11,28 @@ from .Exceptions import CannotCropImage
 class BoundBox:
     """
 
-    _p1                       _p2
-       ######################
-       #                    #
-       #                    #
-       #                    #
-       #                    #
-       ######################
-    _p4                       _p3
-
+         (y axis)
+            -
+            -
+            -
+    ----------------------------------------------------------------------  (x axis)
+            -
+            -                    p1
+            -                  .       .
+            -                .               .
+            -              .                      .
+            -            .                             .
+            -          p4                                  p2
+            -                .                            .
+            -                     .                     .
+            -                          .              .
+            -                               .       .
+            -                                    p3
+            -
+            -
+            -
+            -
+        
     """
 
     def __init__(self, p1, p2, p3, p4, text_value=''):
@@ -26,9 +40,9 @@ class BoundBox:
         self._p1, self._p2, self._p3, self._p4 = self.sort_corners(p1, p2, p3, p4)
         self._text_value = text_value
 
-        self._centroid = None
-        self._length = None
-        self._breadth = None
+        # self._centroid = None
+        # self._length = None
+        # self._breadth = None
 
     def sort_points(self):
         """
@@ -479,3 +493,67 @@ class BoundBox:
     def breadth(self):
         breadth = self._p1 - self._p4
         return breadth
+
+    @property
+    def angle(self):
+        """
+        we find the angle at the point p3 and the line p2, p3 with respect to x axis
+
+         (y axis)
+            -
+            -
+            -
+    ----------------------------------------------------------------------  (x axis)
+            -
+            -                    p1
+            -                -       -
+            -            -               -
+            -        p4                      -
+            -            -                       -
+            -                -                       p2
+            -                    -               -
+            -                 angle  -       -
+                    ------------------- p3
+            -
+            -
+            -
+            -
+
+        TODO : change the angle functionality to the line class
+        we are finding the angle for lower line because for text bound boxes the line below the charaters will
+        be always straight while the upper part might vary due to the height difference between upper case
+        and lower case letters
+        :return: angle in radian
+        """
+
+        dy = self.p3.y - self.p4.y
+        dx = self.p3.x - self.p4.x
+        angle = atan(dy/dx)
+
+        return angle
+
+    def plot_box(self):
+
+        np_array = self.np_array.tolist()
+        # repeat the first point to create a 'closed loop'
+        np_array.append(np_array[0])
+
+        # create lists of x and y values
+        xs, ys = zip(*np_array)
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+
+        # start y axis from top
+        plt.gca().invert_yaxis()
+
+        # change marking of x axis to top
+        ax.xaxis.tick_top()
+
+        for i, p in enumerate(['p1', 'p2', 'p3', 'p4']):
+            ax.annotate(p, (xs[i], ys[i]))
+
+        plt.plot(xs, ys)
+        plt.grid()
+        plt.show()
+
