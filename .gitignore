@@ -3,6 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# custom
+.idea/
+boundbox.egg-info/
+build/
+dist/
+
+
 # C extensions
 *.so
 
