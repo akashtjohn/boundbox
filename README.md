@@ -1,5 +1,9 @@
 # boundbox
 
+The package is available in pip, https://pypi.org/project/boundbox/
+
+for installation : pip install boundbox
+
 boundbox is a lightweight python library that can help developers with bounding boxes while using an ocr or other image
 processing projects.
 
