@@ -15,6 +15,7 @@ from boundbox.Point_class import Point
 
 test_image_url = "https://www.pyimagesearch.com/wp-content/uploads/2017/06/example_01.png"
 
+# TODO : unit tests compare box and merge box
 
 class MyTestCase(unittest.TestCase):
 
@@ -92,6 +93,60 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(box_3.p4.y, 3)
         self.assertEqual(box_3.text_value, 'hello world')
 
+        p1 = Point(0, 0)
+        p2 = Point(2, 0)
+        p3 = Point(2, 2)
+        p4 = Point(0, 2)
+        box_4 = BoundBox(p1, p2, p3, p4)
+
+        p4 = Point(2, 0)
+        p5 = Point(6, 0)
+        p6 = Point(6, 3)
+        p7 = Point(2, 3)
+        box_5 = BoundBox(p4, p5, p6, p7)
+
+        box_6 = box_4 + box_5
+
+        self.assertEqual(box_6.p1.x, 0)
+        self.assertEqual(box_6.p1.y, 0)
+        self.assertEqual(box_6.p2.x, 6)
+        self.assertEqual(box_6.p2.y, 0)
+        self.assertEqual(box_6.p3.x, 6)
+        self.assertEqual(box_6.p3.y, 3)
+        self.assertEqual(box_6.p4.x, 0)
+        self.assertEqual(box_6.p4.y, 3)
+        self.assertEqual(box_6.text_value, '')
+
+    def test_horizontal_merge(self):
+        """
+        test of + operator overloading,
+        addition of two boxes to generate a new box
+        :return:
+        """
+        p1 = Point(0, 0)
+        p2 = Point(2, 0)
+        p3 = Point(2, 2)
+        p4 = Point(0, 2)
+        box_1 = BoundBox(p1, p2, p3, p4, 'hello')
+
+        p4 = Point(2, 0)
+        p5 = Point(6, 0)
+        p6 = Point(6, 3)
+        p7 = Point(2, 3)
+        box_2 = BoundBox(p4, p5, p6, p7, 'world')
+
+        box_3 = BoundBox.horizontal_merge(box_1, box_2)
+
+        self.assertEqual(box_3.p1.x, 0)
+        self.assertEqual(box_3.p1.y, 0)
+        self.assertEqual(box_3.p2.x, 6)
+        self.assertEqual(box_3.p2.y, 0)
+        self.assertEqual(box_3.p3.x, 6)
+        self.assertEqual(box_3.p3.y, 3)
+        self.assertEqual(box_3.p4.x, 0)
+        self.assertEqual(box_3.p4.y, 2)
+        self.assertEqual(box_3.text_value, 'hello world')
+
     def test_pytesseract(self):
 
         if not self.test_image_pytesseract:
@@ -103,6 +158,7 @@ class MyTestCase(unittest.TestCase):
         box_list = BoundBox.pytesseract_boxes(data)
 
         merged_box = BoundBox.void_box()
+
         for box in box_list:
             merged_box += box
 

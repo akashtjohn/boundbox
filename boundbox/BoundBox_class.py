@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from math import sin, cos, atan
+from math import sin, cos, atan, degrees
 import matplotlib.pyplot as plt
 from .Point_class import Point
 from .Line_class import Line
@@ -127,8 +127,9 @@ class BoundBox:
         return p1, p2, p3, p4
 
     def __str__(self):
-        return "_p1: {},     _p2: {},     _p3: {}, " \
-               "    _p4 {}".format(self._p1, self._p2, self._p3, self._p4)
+        # return "_p1: {},     _p2: {},     _p3: {}, " \
+        #        "    _p4 {}".format(self._p1, self._p2, self._p3, self._p4)
+        return "{}".format(self._text_value)
 
     def __repr__(self):
         return "{}".format(self._text_value)
@@ -155,9 +156,14 @@ class BoundBox:
 
         p4 = Point(p4_x, p4_y)
 
-        new_text = self._text_value + ' ' + other.text_value
+        if self._text_value and other.text_value:
+            new_text = self._text_value + ' ' + other.text_value
 
-        return BoundBox(p1, p2, p3, p4, new_text.strip())
+        else:
+            new_text = self._text_value + other.text_value
+
+        merged_box = BoundBox(p1, p2, p3, p4, new_text.strip())
+        return merged_box
 
     @classmethod
     def create_box_from_corners(cls, corner_1, corner_2, text_value=None):
@@ -384,7 +390,7 @@ class BoundBox:
     def draw_box(self, img):
         points = np.array([[self._p1.x, self._p1.y], [self._p2.x, self._p2.y], [self._p3.x, self._p3.y],
                            [self._p4.x, self._p4.y]])
-        cv2.polylines(img, np.int32([points]), True, (0, 255, 0), thickness=1)
+        cv2.polylines(img, np.int32([points]), True, (0, 255, 0), thickness=3)
         return img
 
     @property
@@ -411,25 +417,31 @@ class BoundBox:
 
     @p2.setter
     def p2(self, p):
-        if isinstance(p, Point):
+        if not isinstance(p, Point):
             raise TypeError("point should be an instance of Point Class")
         self._p2 = p
 
     @p3.setter
     def p3(self, p):
-        if isinstance(p, Point):
+        if not isinstance(p, Point):
             raise TypeError("point should be an instance of Point Class")
         self._p3 = p
 
     @p4.setter
     def p4(self, p):
-        if isinstance(p, Point):
+        if not isinstance(p, Point):
             raise TypeError("point should be an instance of Point Class")
         self._p4 = p
 
     @property
     def text_value(self):
         return self._text_value
+
+    @text_value.setter
+    def text_value(self, value):
+        if not isinstance(value, str):
+            raise TypeError("text value should be an instance of str Class")
+        self._text_value = value
 
     @property
     def np_array(self):
@@ -534,12 +546,13 @@ class BoundBox:
 
     def plot_box(self):
 
-        np_array = self.np_array.tolist()
+        np_array = self.np_array
+        array = np_array.tolist()
         # repeat the first point to create a 'closed loop'
-        np_array.append(np_array[0])
+        array.append(array[0])
 
         # create lists of x and y values
-        xs, ys = zip(*np_array)
+        xs, ys = zip(*array)
 
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -557,3 +570,121 @@ class BoundBox:
         plt.grid()
         plt.show()
 
+    @staticmethod
+    def horizontal_merge(box_1, box_2):
+        """
+        merge two boxes. the resulting box will have the left corners of box_1 and
+        right corners of box_2
+        :param box_1:
+        :param box_2:
+        :return:
+        """
+
+        p1 = box_1.p1
+        p2 = box_2.p2
+        p3 = box_2.p3
+        p4 = box_1.p4
+
+        new_text = box_1.text_value + ' ' + box_2.text_value
+
+        try:
+            merged_box = BoundBox(p1, p2, p3, p4, new_text.strip())
+        except TypeError as err:
+            if not box_1.p1.x or not box_1.p4.x:
+                return box_2
+            elif not box_2.p2.x or not box_2.p3.x:
+                return box_1
+            else:
+                raise err
+
+        return merged_box
+
+    @staticmethod
+    def compare_box_horizontally(box1, box2, dx):
+        """
+        compare the boxes to check whether box2 is on the right side of box1 and they are close
+            enough and parallel
+        :param box1: left side box
+        :param box2: right side box
+        :param dx: ratio of distance between boxes to the height of text box
+        :return: True or False whether they belong in the same line
+        # TODO : In the current implementation the checking of y axis is not proper for slopes. need to change it
+        """
+
+        # check the distance between box1.p3 - box2.p4 and box1.p2 - box2.p1 are almost equal
+
+        distance_threshold = abs(box1.p2 - box2.p3) / 10
+
+        d1 = box1.p3 - box2.p4
+        d2 = box1.p2 - box2.p1
+        if abs(d1 - d2) > distance_threshold:
+            return False
+
+        # check difference between angles in degree
+        angle_diff_threshold = 5
+        angle_diff = abs(degrees(box1.angle) - degrees(box2.angle))
+        if angle_diff > angle_diff_threshold:
+            return False
+
+        box_height = box1.p2 - box1.p3
+        # check they lie on the same x axis. We look for difference in y axis
+        dy = box_height / 3
+        if abs(box1.p3.y - box2.p4.y) > dy:
+            return False
+
+        # check distance between boxes
+        distance_threshold = box_height * dx
+        if box1.p2.x < box2.p1.x:
+            distance_between_boxes = ((box2.p4.x - box1.p3.x) + (box2.p1.x - box1.p2.x)) / 2
+            if distance_between_boxes > distance_threshold:
+                return False
+
+        elif box1.p1.x > box2.p2.x:
+            return False
+
+        return True
+
+    @staticmethod
+    def merge_box(box_list, dx=1):
+        """
+        This function is used to merge similar kind of text in an image and create meaningful sentences
+        :param box_list: list of box objects that need to be merged
+        :param dx: ratio of distance between boxes to the height of text box, keep 1 as default
+        :return: list of box objects where certain boxes are merged
+        # TODO : The below implementation is not optimal or the best. Need to change it to clustering
+        """
+
+        # sort the boxlist by the the x value of point p1
+        box_list.sort(key=lambda k: k.p1.x)
+
+        # set same number of flags to zero
+        process_flag = [False]*len(box_list)
+        results = []
+
+        while True:
+            # if all boxes are processed stop the loop
+            if all(process_flag):
+                break
+
+            # take the first unprocessed box as current box and set its flag as True
+            current_box_index = process_flag.index(False)
+            current_box = box_list[current_box_index]
+            process_flag[current_box_index] = True
+
+            # loop through the the unprocessed boxes
+            for index, b in enumerate(box_list):
+
+                # if it is already done skip it
+                if process_flag[index]:
+                    continue
+
+                # compare the box 'b' horizontally with current box and check if they are near by
+                if BoundBox.compare_box_horizontally(current_box, b, dx):
+                    current_box = BoundBox.horizontal_merge(current_box, b)
+                    process_flag[index] = True
+
+            results.append(current_box)
+
+        results.sort(key=lambda k: k.p1.y)
+
+        return results
