@@ -44,6 +44,9 @@ class BoundBox:
         # self._length = None
         # self._breadth = None
 
+    def to_dict(self):
+        return {'p1': self._p1, 'p2': self._p2, 'p3': self._p3, 'p4': self._p4, 'text': self.text_value}
+
     def sort_points(self):
         """
         sort the points of the box after transformations
@@ -214,7 +217,7 @@ class BoundBox:
         try:
             for i in range(len(data['level'])):
 
-                if data['text'][i]:
+                #if data['text'][i]:
                     (x, y, w, h) = (data['left'][i], data['top'][i], data['width'][i], data['height'][i])
                     corner_1 = Point(x, y)
                     corner_2 = Point(x+w, y+h)
@@ -228,6 +231,48 @@ class BoundBox:
             raise ee
 
         return box_list
+
+    @classmethod
+    def google_ocr_boxes(cls, data):
+        """
+        create a list of list of boxes from results from google ocr data
+        here the result is a list of list because multiple pages can be parsed together
+        and a list of boxes is created for each page
+        :param data: google ocr response data as dict
+        :return: list(list(boxes))
+        """
+
+        page_list = []
+        google_response = data['responses']
+
+        # fill zero values for places where google ocr omitted values
+        for page in google_response:
+            for annotation in page['textAnnotations']:
+                for vertex in range(len(annotation['boundingPoly']['vertices'])):
+                    if 'x' not in annotation['boundingPoly']['vertices'][vertex]:
+                        annotation['boundingPoly']['vertices'][vertex]['x'] = 0
+
+                    elif 'y' not in annotation['boundingPoly']['vertices'][vertex]:
+                        annotation['boundingPoly']['vertices'][vertex]['y'] = 0
+
+        for page in google_response:
+            box_list = []
+            text_annotations = page['textAnnotations'][1:]
+
+            for annotation in text_annotations:
+                box = cls.create_box(annotation['boundingPoly']['vertices'][0]['x'],
+                                     annotation['boundingPoly']['vertices'][0]['y'],
+                                     annotation['boundingPoly']['vertices'][1]['x'],
+                                     annotation['boundingPoly']['vertices'][1]['y'],
+                                     annotation['boundingPoly']['vertices'][2]['x'],
+                                     annotation['boundingPoly']['vertices'][2]['y'],
+                                     annotation['boundingPoly']['vertices'][3]['x'],
+                                     annotation['boundingPoly']['vertices'][3]['y'],
+                                     annotation['description'])
+                box_list.append(box)
+            page_list.append(box_list)
+
+        return page_list
 
     @classmethod
     def box_from_contour(cls, countour):
