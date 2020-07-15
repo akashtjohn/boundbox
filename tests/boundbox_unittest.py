@@ -5,6 +5,7 @@ from math import radians, degrees
 import numpy as np
 import cv2
 import warnings
+import json
 from pytesseract import image_to_data, Output
 
 import sys
@@ -163,6 +164,24 @@ class MyTestCase(unittest.TestCase):
             merged_box += box
 
         self.assertEqual(merged_box.text_value, 'Noisyimage to test Tesseract OCR')
+
+    def test_google_ocr(self):
+
+        google_ocr_sample_response_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                       'google_ocr_sample_response.json')
+
+        with open(google_ocr_sample_response_file, 'rb') as sample_reponse:
+            reponse_json = json.load(sample_reponse)
+
+        box_list = BoundBox.google_ocr_boxes(reponse_json)
+
+        merged_box = BoundBox.void_box()
+
+        # google ocr returns a list of list
+        for box in box_list[0]:
+            merged_box += box
+
+        self.assertEqual(merged_box.text_value, 'WAITING? PLEASE TURN OFF YOUR ENGINE')
 
     def test_image_from_contour(self):
         contour_array = np.array([[[429, 48]], [[113, 96]], [[129, 415]], [[430, 423]]])

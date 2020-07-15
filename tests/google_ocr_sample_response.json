@@ -1,0 +1,174 @@
+{
+  "responses": [
+    {
+      "textAnnotations": [
+        {
+          "locale": "en",
+          "description": "WAITING?\nPLEASE\nTURN OFF\nYOUR\nENGINE\n",
+          "boundingPoly": {
+            "vertices": [
+              {
+                "x": 341,
+                "y": 828
+              },
+              {
+                "x": 2249,
+                "y": 828
+              },
+              {
+                "x": 2249,
+                "y": 1993
+              },
+              {
+                "x": 341,
+                "y": 1993
+              }
+            ]
+          }
+        },
+        {
+          "description": "WAITING?",
+          "boundingPoly": {
+            "vertices": [
+              {
+                "x": 352,
+                "y": 828
+              },
+              {
+                "x": 2248,
+                "y": 911
+              },
+              {
+                "x": 2238,
+                "y": 1148
+              },
+              {
+                "x": 342,
+                "y": 1065
+              }
+            ]
+          }
+        },
+        {
+          "description": "PLEASE",
+          "boundingPoly": {
+            "vertices": [
+              {
+                "x": 1210,
+                "y": 1233
+              },
+              {
+                "x": 1907,
+                "y": 1263
+              },
+              {
+                "x": 1902,
+                "y": 1383
+              },
+              {
+                "x": 1205,
+                "y": 1353
+              }
+            ]
+          }
+        },
+        {
+          "description": "TURN",
+          "boundingPoly": {
+            "vertices": [
+              {
+                "x": 1210,
+                "y": 1418
+              },
+              {
+                "x": 1730,
+                "y": 1441
+              },
+              {
+                "x": 1724,
+                "y": 1564
+              },
+              {
+                "x": 1205,
+                "y": 1541
+              }
+            ]
+          }
+        },
+        {
+          "description": "OFF",
+          "boundingPoly": {
+            "vertices": [
+              {
+                "x": 1792,
+                "y": 1443
+              },
+              {
+                "x": 2128,
+                "y": 1458
+              },
+              {
+                "x": 2122,
+                "y": 1581
+              },
+              {
+                "x": 1787,
+                "y": 1566
+              }
+            ]
+          }
+        },
+        {
+          "description": "YOUR",
+          "boundingPoly": {
+            "vertices": [
+              {
+                "x": 1219,
+                "y": 1603
+              },
+              {
+                "x": 1746,
+                "y": 1629
+              },
+              {
+                "x": 1740,
+                "y": 1759
+              },
+              {
+                "x": 1213,
+                "y": 1733
+              }
+            ]
+          }
+        },
+        {
+          "description": "ENGINE",
+          "boundingPoly": {
+            "vertices": [
+              {
+                "x": 1222,
+                "y": 1771
+              },
+              {
+                "x": 1944,
+                "y": 1834
+              },
+              {
+                "x": 1930,
+                "y": 1992
+              },
+              {
+                "x": 1208,
+                "y": 1928
+              }
+            ]
+          }
+        }
+      ],
+      "fullTextAnnotation": {
+
+        "text": "WAITING?\nPLEASE\nTURN OFF\nYOUR\nENGINE\n"
+      }
+    }
+  ]
+}
