@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 from math import sin, cos, atan, degrees
 import matplotlib.pyplot as plt
+import xml.etree.ElementTree as ET
+
 from .Point_class import Point
 from .Line_class import Line
 from .BoundBox_utils import min_value, max_value
@@ -273,6 +275,22 @@ class BoundBox:
             page_list.append(box_list)
 
         return page_list
+
+    @classmethod
+    def labelimg_xml_boxes(cls, xml_path):
+        tree = ET.parse(xml_path)
+        root = tree.getroot()
+
+        box_list = []
+
+        for member in root.findall('object'):
+            text = member[0].text
+            corner_1 = Point(int(member[4][0].text), int(member[4][1].text))
+            corner_2 = Point(int(member[4][2].text), int(member[4][3].text))
+            box = cls.create_box_from_corners(corner_1, corner_2, text_value=text)
+            box_list.append(box)
+
+        return box_list
 
     @classmethod
     def box_from_contour(cls, countour):

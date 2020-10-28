@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="boundbox", 
-    version="0.0.3",
+    version="0.0.4",
     author="Akash Thomas",
     author_email="akashthomasjohn@gmail.com",
     description="Package for bounding boxes",

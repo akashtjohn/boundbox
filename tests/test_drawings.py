@@ -47,4 +47,11 @@ def test_drawing():
     display(img)
     print("done")
 
-test_drawing()
+def test_something():
+
+    xml_path = "/home/wasp/WorkingDirectory/boundbox/tests/labelImg_xml.xml"
+    box_list = BoundBox.labelimg_xml_boxes(xml_path)
+
+    print("done")
+
+test_something()
