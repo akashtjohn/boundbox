@@ -43,8 +43,6 @@ def test_drawing():
     for box in box_list:
         box.draw_box(img)
 
-
     display(img)
-    print("done")
 
-test_drawing()
+

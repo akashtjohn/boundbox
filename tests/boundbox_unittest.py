@@ -182,6 +182,21 @@ class MyTestCase(unittest.TestCase):
             merged_box += box
 
         self.assertEqual(merged_box.text_value, 'WAITING? PLEASE TURN OFF YOUR ENGINE')
+        
+    def test_labelimg_xml(self):
+        
+        labelimg_xml_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                       'labelImg_xml.xml')
+        box_list = BoundBox.labelimg_xml_boxes(labelimg_xml_file)
+        
+        self.assertEqual(len(box_list), 2)
+        
+        # test values of the second box
+        self.assertEqual(box_list[1].p1.x, 498)
+        self.assertEqual(box_list[1].p1.y, 188)
+        self.assertEqual(box_list[1].p3.x, 607)
+        self.assertEqual(box_list[1].p3.y, 296)
+        self.assertEqual(box_list[1].text_value, 'cube')
 
     def test_image_from_contour(self):
         contour_array = np.array([[[429, 48]], [[113, 96]], [[129, 415]], [[430, 423]]])
