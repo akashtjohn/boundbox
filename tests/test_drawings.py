@@ -43,15 +43,6 @@ def test_drawing():
     for box in box_list:
         box.draw_box(img)
 
-
     display(img)
-    print("done")
 
-def test_something():
 
-    xml_path = "/home/wasp/WorkingDirectory/boundbox/tests/labelImg_xml.xml"
-    box_list = BoundBox.labelimg_xml_boxes(xml_path)
-
-    print("done")
-
-test_something()
