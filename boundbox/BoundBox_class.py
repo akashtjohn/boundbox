@@ -436,6 +436,9 @@ class BoundBox:
         points = np.array([[self._p1.x, self._p1.y], [self._p2.x, self._p2.y], [self._p3.x, self._p3.y],
                            [self._p4.x, self._p4.y]])
         cv2.polylines(img, np.int32([points]), True, (0, 255, 0), thickness=3)
+        cv2.putText(img, self.text_value, (self.p1.x, self.p1.y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                    (0, 0, 255), 1)
+
         return img
 
     @property
