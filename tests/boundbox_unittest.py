@@ -165,12 +165,12 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(merged_box.text_value, 'Noisyimage to test Tesseract OCR')
 
-    def test_google_ocr(self):
+    def test_google_ocr_good_file(self):
 
-        google_ocr_sample_response_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                                       'google_ocr_sample_response.json')
+        google_ocr_good_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                            'test_samples', 'google_ocr', 'good_text.json')
 
-        with open(google_ocr_sample_response_file, 'rb') as sample_reponse:
+        with open(google_ocr_good_file, 'rb') as sample_reponse:
             reponse_json = json.load(sample_reponse)
 
         box_list = BoundBox.google_ocr_boxes(reponse_json)
@@ -182,11 +182,23 @@ class MyTestCase(unittest.TestCase):
             merged_box += box
 
         self.assertEqual(merged_box.text_value, 'WAITING? PLEASE TURN OFF YOUR ENGINE')
-        
+
+    def test_google_ocr_blank_file(self):
+
+        google_ocr_blank_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                             'test_samples', 'google_ocr', 'blank_image.json')
+
+        with open(google_ocr_blank_file, 'rb') as sample_reponse:
+            reponse_json = json.load(sample_reponse)
+
+        box_list = BoundBox.google_ocr_boxes(reponse_json)
+
+        self.assertEqual(len(box_list[0]), 0)
+
     def test_labelimg_xml(self):
         
         labelimg_xml_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                                       'labelImg_xml.xml')
+                                         'test_samples', 'labelImg', 'labelImg_xml.xml')
         box_list = BoundBox.labelimg_xml_boxes(labelimg_xml_file)
         
         self.assertEqual(len(box_list), 2)
@@ -197,6 +209,44 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(box_list[1].p3.x, 607)
         self.assertEqual(box_list[1].p3.y, 296)
         self.assertEqual(box_list[1].text_value, 'cube')
+
+    def test_azure_ocr_good_file(self):
+
+        azure_ocr_good_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                           'test_samples', 'azure_ocr', 'good_text.json')
+
+        with open(azure_ocr_good_file, 'rb') as sample_reponse:
+            reponse_json = json.load(sample_reponse)
+
+        box_list = BoundBox.azure_ocr_boxes(reponse_json)
+        merged_box = BoundBox.void_box()
+
+        # google ocr returns a list of list
+        for box in box_list[0]:
+            merged_box += box
+
+        self.assertEqual(merged_box.text_value, 'Noisy image to test Tesseract OCR')
+
+        box_list_for_lines = BoundBox.azure_ocr_boxes(reponse_json, merge_line=True)
+        merged_box = BoundBox.void_box()
+
+        # google ocr returns a list of list
+        for box in box_list_for_lines[0]:
+            merged_box += box
+
+        self.assertEqual(merged_box.text_value, 'Noisy image to test Tesseract OCR')
+
+    def test_azure_ocr_blank_file(self):
+
+        azure_ocr_blank_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                            'test_samples', 'azure_ocr', 'blank_image.json')
+
+        with open(azure_ocr_blank_file, 'rb') as sample_reponse:
+            reponse_json = json.load(sample_reponse)
+
+        box_list = BoundBox.azure_ocr_boxes(reponse_json)
+
+        self.assertEqual(len(box_list[0]), 0)
 
     def test_image_from_contour(self):
         contour_array = np.array([[[429, 48]], [[113, 96]], [[129, 415]], [[430, 423]]])

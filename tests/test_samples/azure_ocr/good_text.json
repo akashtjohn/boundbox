@@ -1,0 +1,141 @@
+{
+  "status": "Succeeded",
+  "succeeded": true,
+  "failed": false,
+  "finished": true,
+  "recognitionResults": [
+    {
+      "page": 1,
+      "clockwiseOrientation": 0.07,
+      "width": 500,
+      "height": 250,
+      "unit": "pixel",
+      "lines": [
+        {
+          "boundingBox": [
+            76,
+            25,
+            423,
+            29,
+            422,
+            97,
+            75,
+            93
+          ],
+          "text": "Noisy image",
+          "words": [
+            {
+              "boundingBox": [
+                78,
+                29,
+                240,
+                30,
+                238,
+                95,
+                76,
+                90
+              ],
+              "text": "Noisy"
+            },
+            {
+              "boundingBox": [
+                252,
+                30,
+                422,
+                29,
+                420,
+                99,
+                250,
+                96
+              ],
+              "text": "image"
+            }
+          ]
+        },
+        {
+          "boundingBox": [
+            161,
+            99,
+            337,
+            98,
+            338,
+            154,
+            161,
+            155
+          ],
+          "text": "to test",
+          "words": [
+            {
+              "boundingBox": [
+                169,
+                100,
+                227,
+                100,
+                227,
+                156,
+                169,
+                155
+              ],
+              "text": "to"
+            },
+            {
+              "boundingBox": [
+                238,
+                100,
+                336,
+                99,
+                336,
+                155,
+                238,
+                156
+              ],
+              "text": "test"
+            }
+          ]
+        },
+        {
+          "boundingBox": [
+            37,
+            167,
+            464,
+            167,
+            464,
+            222,
+            37,
+            221
+          ],
+          "text": "Tesseract OCR",
+          "words": [
+            {
+              "boundingBox": [
+                48,
+                168,
+                304,
+                171,
+                303,
+                223,
+                49,
+                222
+              ],
+              "text": "Tesseract"
+            },
+            {
+              "boundingBox": [
+                315,
+                171,
+                455,
+                169,
+                454,
+                221,
+                314,
+                223
+              ],
+              "text": "OCR"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
