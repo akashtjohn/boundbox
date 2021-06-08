@@ -65,8 +65,10 @@ class BoundBox:
         :param p3: point 3
         :param p4: point 4
         :return: tuple of corners in sorted order
-        TODO : implement a mechanism to check points are on the same line
         """
+
+        # TODO : implement a mechanism to check points are on the same line
+        # TODO : need to test multiple page ocr
 
         # if any of the values is null return without sorting
         # this is to avoid None comparisons in case of void boxes
@@ -249,6 +251,8 @@ class BoundBox:
 
         # fill zero values for places where google ocr omitted values
         for page in google_response:
+            if 'textAnnotations' not in page:
+                continue
             for annotation in page['textAnnotations']:
                 for vertex in range(len(annotation['boundingPoly']['vertices'])):
                     if 'x' not in annotation['boundingPoly']['vertices'][vertex]:
@@ -259,6 +263,11 @@ class BoundBox:
 
         for page in google_response:
             box_list = []
+
+            if 'textAnnotations' not in page:
+                page_list.append([])
+                continue
+
             text_annotations = page['textAnnotations'][1:]
 
             for annotation in text_annotations:
@@ -291,6 +300,60 @@ class BoundBox:
             box_list.append(box)
 
         return box_list
+
+    @classmethod
+    def azure_ocr_boxes(cls, data: dict, merge_line: bool = False) -> list:
+        """
+        converts azure ocr response json into list of boundbox objects. the result will contain
+        separate list for separate pages of the response
+
+        @param data: response json from azure ocr
+        @param merge_line: keep True for result on a line in single box, else every word will be seperate box
+        @return:
+        """
+
+        # TODO test sorting on rotated image
+
+        page_list = []
+
+        recognition_results = data['recognitionResults']
+
+        for page_result in recognition_results:
+            box_list = []
+            for line in page_result['lines']:
+                
+                # azure ocr returns both line by line ocr and individual words, user can select type of result
+                if merge_line:
+
+                    box = cls.create_box(line['boundingBox'][0],
+                                         line['boundingBox'][1],
+                                         line['boundingBox'][2],
+                                         line['boundingBox'][3],
+                                         line['boundingBox'][4],
+                                         line['boundingBox'][5],
+                                         line['boundingBox'][6],
+                                         line['boundingBox'][7],
+                                         line['text'])
+                    
+                    box_list.append(box)
+        
+                else:
+                    for word in line['words']:
+                        box = cls.create_box(word['boundingBox'][0],
+                                             word['boundingBox'][1],
+                                             word['boundingBox'][2],
+                                             word['boundingBox'][3],
+                                             word['boundingBox'][4],
+                                             word['boundingBox'][5],
+                                             word['boundingBox'][6],
+                                             word['boundingBox'][7],
+                                             word['text'])
+
+                        box_list.append(box)
+        
+            page_list.append(box_list)
+
+        return page_list
 
     @classmethod
     def box_from_contour(cls, countour):
