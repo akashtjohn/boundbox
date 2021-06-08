@@ -309,7 +309,7 @@ class BoundBox:
 
         @param data: response json from azure ocr
         @param merge_line: keep True for result on a line in single box, else every word will be seperate box
-        @return:
+        @return: list(list(boxes))
         """
 
         # TODO test sorting on rotated image
