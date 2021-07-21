@@ -20,8 +20,39 @@ boundbox supports Python >= 3.6. You can install it by doing
 
     pip install boundbox
 
+### Box corners
+
+
+
+    """
+
+         (y axis)
+            -
+            -
+            -
+    ----------------------------------------------------------------------  (x axis)
+            -
+            -                    p1
+            -                  .       .
+            -                .               .
+            -              .                      .
+            -            .                             .
+            -          p4                                  p2
+            -                .                            .
+            -                     .                     .
+            -                          .              .
+            -                               .       .
+            -                                    p3
+            -
+            -
+            -
+            -
+        
+    """
 
 ## Usage
+
+
 
 ### pytesseract
 
@@ -40,7 +71,6 @@ boundbox supports Python >= 3.6. You can install it by doing
     box_list = BoundBox.pytesseract_boxes(data)
     
     box = box_list[0]
-
 
     # corner points of the boxes are accessed by variable 'p1', 'p2', 'p3', 'p4'
 
