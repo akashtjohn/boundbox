@@ -46,13 +46,13 @@ boundbox supports Python >= 3.6. You can install it by doing
 
     print(box.p1, box.p2, box.p3, box.p4)
 
-    # >>> (77, 30) (420, 30) (420, 94) (77, 94)
+    >>> (77, 30) (420, 30) (420, 94) (77, 94)
 
     # text value is accessed by 'text_value' 
 
     print(box.text_value)
 
-    # >>> Noisyimage
+    >>> Noisyimage
     
     # draw the box on the image
     drawn = box.draw_box(img)
