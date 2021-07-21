@@ -15,7 +15,7 @@ to change between different OCR services or bounding box
 * Image transformation features such as perspective transformations and box visualizations
   
 
-###Installation
+### Installation
 boundbox supports Python >= 3.6. You can install it by doing
 
     pip install boundbox
@@ -23,7 +23,7 @@ boundbox supports Python >= 3.6. You can install it by doing
 
 ## Usage
 
-###pytesseract
+### pytesseract
 
     from Boundbox import BoundBox
 
@@ -58,5 +58,5 @@ boundbox supports Python >= 3.6. You can install it by doing
     drawn = box.draw_box(img)
 
 
-![Alt text](documentation/images/test.png?raw=true)
+![drawn](https://user-images.githubusercontent.com/50582261/126544566-3388d37d-b98c-456c-9943-96f9140c1ba9.png)
 
