@@ -24,16 +24,6 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(d, 5)
 
-    def test_sum(self):
-
-        p = Point(1, 2, 3)
-        self.assertEqual(6, p.sum)
-
-    def test_diff_of_x_y(self):
-
-        p = Point(4, 2)
-        self.assertEqual(p.diff_of_x_y, 2)
-
 
 if __name__ == '__main__':
     unittest.main()
