@@ -74,9 +74,15 @@ boundbox supports Python >= 3.6. You can install it by doing
 
     # corner points of the boxes are accessed by variable 'p1', 'p2', 'p3', 'p4'
 
-    print(box.p1, box.p2, box.p3, box.p4)
+    print(box.p1.x, box.p1.y)
+    print(box.p2.x, box.p2.y)
+    print(box.p3.x, box.p3.y)
+    print(box.p4.x, box.p4.y)
 
-    >>> (77, 30) (420, 30) (420, 94) (77, 94)
+    >>> 77 30
+    >>> 420 30
+    >>> 420 94
+    >>> 77 94
 
     # text value is accessed by 'text_value' 
 
@@ -89,4 +95,22 @@ boundbox supports Python >= 3.6. You can install it by doing
 
 
 ![drawn](https://user-images.githubusercontent.com/50582261/126544566-3388d37d-b98c-456c-9943-96f9140c1ba9.png)
+
+
+### Google Vision OCR
+
+Response from [google vision ocr](https://cloud.google.com/vision/docs/ocr) can be converted to boundbox objects. 
+Since the response might contain multiple pages, the method returns list of list, each nested list contains results 
+from individual page
+
+    # pass google ocr response dictionary to google_ocr_boxes method
+
+    BoundBox.google_ocr_boxes(response_dict)
+    
+    # first box from the first page
+    box = box_list[0][0]
+
+    print(box.text_value)
+    >>> Noisy
+
 

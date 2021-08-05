@@ -134,6 +134,56 @@ class BoundBox:
 
         return box_list
 
+    @classmethod
+    def google_ocr_boxes(cls, data: dict):
+        """
+        Alternate constructor to create BoundBox objects google vision ocr response data
+        ocr details can be found at https://cloud.google.com/vision/docs/ocr
+
+        google ocr data returns results for multiple pages,
+        so this method will return a list of lists,
+        each nested list contains results of individual page
+
+        :param data: google ocr response dictionary
+        :return: list of BoundBox object
+        """
+
+        page_list = []
+        google_response = data['responses']
+
+        for page in google_response:
+            box_list = []
+
+            try:
+                text_annotations = page['textAnnotations'][1:]
+            except KeyError:
+                # in case testAnnotation is not there, append empty list for the page
+                page_list.append([])
+                continue
+
+            for annotation in text_annotations:
+                # here .get operation is used with default value 0 to
+                # fill zero values for places where google ocr omitted values
+
+                p1 = Point(annotation['boundingPoly']['vertices'][0].get('x', 0),
+                           annotation['boundingPoly']['vertices'][0].get('y', 0))
+
+                p2 = Point(annotation['boundingPoly']['vertices'][1].get('x', 0),
+                           annotation['boundingPoly']['vertices'][1].get('y', 0))
+
+                p3 = Point(annotation['boundingPoly']['vertices'][2].get('x', 0),
+                           annotation['boundingPoly']['vertices'][2].get('y', 0))
+
+                p4 = Point(annotation['boundingPoly']['vertices'][3].get('x', 0),
+                           annotation['boundingPoly']['vertices'][3].get('y', 0))
+
+                box = cls(p1, p2, p3, p4, annotation['description'])
+                box_list.append(box)
+
+            page_list.append(box_list)
+
+        return page_list
+
     @property
     def p1(self):
         """
