@@ -8,7 +8,7 @@ __pycache__/
 boundbox.egg-info/
 build/
 dist/
-test_files/
+temp_test_files/
 
 
 # C extensions

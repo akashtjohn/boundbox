@@ -56,7 +56,7 @@ boundbox supports Python >= 3.6. You can install it by doing
 
 ### pytesseract
 
-    from Boundbox import BoundBox
+    from boundbox import BoundBox
 
     import cv2
     from pytesseract import image_to_data, Output
