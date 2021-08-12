@@ -5,6 +5,9 @@ Created on Mon Jul 24 01:30:24 2021
 @author: akash
 """
 
+import cv2
+import numpy as np
+
 from .Point_class import Point
 
 
@@ -184,6 +187,47 @@ class BoundBox:
 
         return page_list
 
+    def draw_box(self, img, write_text=True, mark_coordinates=False, annotate_points=False):
+        """
+
+        draw the box on the image
+
+        @param img: image object, numpy array
+        @param write_text: write ocr text on top of image flag, by default true
+        @param mark_coordinates: write x and y coordinates on the corners of the box, by default false
+        @param annotate_points: write point names such as p1, p2 etc on the corners of the box, by default false
+        @return: image obj
+        """
+        points = np.array([[self._p1.x, self._p1.y], [self._p2.x, self._p2.y], [self._p3.x, self._p3.y],
+                           [self._p4.x, self._p4.y]])
+        cv2.polylines(img, np.int32([points]), True, (0, 255, 0), thickness=2)
+
+        if write_text:
+            cv2.putText(img, self.text_value, (self.p1.x, self.p1.y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                        (0, 0, 255), 1)
+
+        if mark_coordinates:
+            cv2.putText(img, f"p1 ({self.p1.x}, {self.p1.y})", (self.p1.x-20, self.p1.y-5), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5, (255, 0, 0), 1)
+            cv2.putText(img, f"p2 ({self.p2.x}, {self.p2.y})", (self.p2.x+5, self.p2.y-5), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5, (255, 0, 0), 1)
+            cv2.putText(img, f"p3 ({self.p3.x}, {self.p3.y})", (self.p3.x+5, self.p3.y+10), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5, (255, 0, 0), 1)
+            cv2.putText(img, f"p4 ({self.p4.x}, {self.p4.y})", (self.p4.x-20, self.p4.y+10), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5, (255, 0, 0), 1)
+
+        if annotate_points:
+            cv2.putText(img, f"p1", (self.p1.x-10, self.p1.y-5), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5, (255, 0, 0), 1)
+            cv2.putText(img, f"p2", (self.p2.x+5, self.p2.y-5), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5, (255, 0, 0), 1)
+            cv2.putText(img, f"p3", (self.p3.x+5, self.p3.y+10), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5, (255, 0, 0), 1)
+            cv2.putText(img, f"p4", (self.p4.x-10, self.p4.y+10), cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5, (255, 0, 0), 1)
+
+        return img
+
     @property
     def p1(self):
         """
@@ -263,3 +307,4 @@ class BoundBox:
         @param value: string value
         """
         self._text_value = value
+

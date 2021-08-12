@@ -114,3 +114,4 @@ from individual page
     >>> Noisy
 
 
+### Azure OCR
