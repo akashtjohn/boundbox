@@ -16,7 +16,7 @@ to change between different OCR services or bounding box
   
 
 ### Installation
-boundbox supports Python >= 3.6. You can install it by doing
+boundbox supports Python >= 3.6. You can install it using
 
     pip install boundbox
 
@@ -99,7 +99,7 @@ boundbox supports Python >= 3.6. You can install it by doing
 
 ### Google Vision OCR
 
-Response from [google vision ocr](https://cloud.google.com/vision/docs/ocr) can be converted to boundbox objects. 
+Response from [google vision ocr](https://cloud.google.com/vision/docs/ocr) can be converted to **BoundBox** objects. 
 Since the response might contain multiple pages, the method returns list of list, each nested list contains results 
 from individual page
 
@@ -115,3 +115,27 @@ from individual page
 
 
 ### Azure OCR
+
+Response from [Azure Read](https://centraluseuap.dev.cognitive.microsoft.com/docs/services/computer-vision-v3-2/operations/5d986960601faab4bf452005)
+can be converted to **BoundBox** objects. Since the response might contain multiple pages, the method
+returns a list of list, each nested list contains results from individual page
+
+    # pass azure read response dictionary to azure_read_boxes method
+
+    BoundBox.azure_read_boxes(response_dict,  merge_line=False)
+    
+    # first box from the first page
+    box = box_list[0][0]
+
+    print(box.text_value)
+    >>> Noisy
+
+Azure read returns both line by line and word by word results.
+The ***merge_line*** parameter can be used to select **line** or **word** results
+
+###### note: Azure has various OCR services, Currently boundbox supports only [Azure Read](https://centraluseuap.dev.cognitive.microsoft.com/docs/services/computer-vision-v3-2/operations/5d986960601faab4bf452005)
+
+
+
+
+

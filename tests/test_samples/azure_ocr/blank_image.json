@@ -1,18 +1,19 @@
-
 {
-  "status": "Succeeded",
-  "succeeded": true,
-  "failed": false,
-  "finished": true,
-  "recognitionResults": [
-    {
-      "page": 1,
-      "clockwiseOrientation": 0.0,
-      "width": 800,
-      "height": 600,
-      "unit": "pixel",
-      "lines": []
-    }
-  ]
+  "status": "succeeded",
+  "createdDateTime": "2020-09-21T15:27:53Z",
+  "lastUpdatedDateTime": "2020-09-21T15:27:55Z",
+  "analyzeResult": {
+    "version": "3.2.0",
+    "modelVersion": "2021-04-12",
+    "readResults": [
+      {
+        "page": 1,
+        "angle": 0.1646,
+        "width": 500,
+        "height": 250,
+        "unit": "pixel",
+        "lines": []
+      }
+    ]
+  }
 }
-

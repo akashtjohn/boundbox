@@ -187,6 +187,57 @@ class BoundBox:
 
         return page_list
 
+    @classmethod
+    def azure_read_boxes(cls, data: dict, merge_line: bool = False) -> list:
+        """
+        converts azure read/analyze response json into list of boundbox objects.
+
+        This method parse the response from https://centraluseuap.dev.cognitive.microsoft.com/docs/services/computer-vision-v3-2/operations/5d986960601faab4bf452005
+
+        note: there are multiple azure ocr services, make sure you are using the correct one
+
+        the result will contain separate list for separate pages of the response
+        @param data: response json from azure ocr
+        @param merge_line: keep True for result on a line in single box, else every word will be seperate box
+        @return: list(list(boxes))
+        """
+
+        page_list = []
+
+        recognition_results = data['analyzeResult']['readResults']
+
+        for page_result in recognition_results:
+            box_list = []
+            for line in page_result['lines']:
+
+                # azure ocr returns both line by line ocr and individual words, user can select type of result
+                if merge_line:
+
+                    p1 = Point(line['boundingBox'][0], line['boundingBox'][1])
+                    p2 = Point(line['boundingBox'][2], line['boundingBox'][3])
+                    p3 = Point(line['boundingBox'][4], line['boundingBox'][5])
+                    p4 = Point(line['boundingBox'][6], line['boundingBox'][7])
+
+                    box = cls(p1, p2, p3, p4, line['text'])
+
+                    box_list.append(box)
+
+                else:
+                    for word in line['words']:
+
+                        p1 = Point(word['boundingBox'][0], word['boundingBox'][1])
+                        p2 = Point(word['boundingBox'][2], word['boundingBox'][3])
+                        p3 = Point(word['boundingBox'][4], word['boundingBox'][5])
+                        p4 = Point(word['boundingBox'][6], word['boundingBox'][7])
+
+                        box = cls(p1, p2, p3, p4, word['text'])
+
+                        box_list.append(box)
+
+            page_list.append(box_list)
+
+        return page_list
+
     def draw_box(self, img, write_text=True, mark_coordinates=False, annotate_points=False):
         """
 
