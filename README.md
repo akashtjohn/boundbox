@@ -50,6 +50,14 @@ boundbox supports Python >= 3.6. You can install it using
         
     """
 
+## Sample
+
+
+
+![drawn](https://user-images.githubusercontent.com/50582261/129756043-61029488-1fb2-4055-a0ac-04f1a3211ffd.png)
+
+
+
 ## Usage
 
 
@@ -92,10 +100,6 @@ boundbox supports Python >= 3.6. You can install it using
     
     # draw the box on the image
     drawn = box.draw_box(img)
-
-
-![drawn](https://user-images.githubusercontent.com/50582261/126544566-3388d37d-b98c-456c-9943-96f9140c1ba9.png)
-
 
 ### Google Vision OCR
 

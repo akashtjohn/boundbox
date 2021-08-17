@@ -12,22 +12,27 @@ import json
 import os
 from boundbox.image_utils import display
 
-
-google_ocr_good_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tests',
-                                    'test_samples', 'azure_ocr', 'blank_image.json')
+google_ocr_good_file = "/home/wasp/WorkingDirectory/boundbox_0.1/boundbox/tests/test_samples/google_ocr/good_results.json"
 
 with open(google_ocr_good_file, 'rb') as sample_response:
     response_json = json.load(sample_response)
 
-box_list = BoundBox.azure_read_boxes(response_json, merge_line=False)
+box_list = BoundBox.google_ocr_boxes(response_json)
+box = box_list[0][0]
 
-background = cv2.imread("/home/wasp/Downloads/test.png")
+# corner points of the boxes are accessed by variable 'p1', 'p2', 'p3', 'p4'
 
-for box in box_list[0]:
+print(box.p1.x, box.p1.y)
+print(box.p2.x, box.p2.y)
+print(box.p3.x, box.p3.y)
+print(box.p4.x, box.p4.y)
 
-    background = box.draw_box(background, annotate_points=True)
+# text value is accessed by 'text_value'
 
-display(background, keep_size=True)
-
-
+print(box.text_value)
+img = cv2.imread("/home/wasp/Downloads/test.png")
+# draw the box on the image
+drawn = box.draw_box(img, annotate_points=True)
 print('asdf')
+cv2.imwrite('result.png', drawn)
+display(drawn, keep_size=True)

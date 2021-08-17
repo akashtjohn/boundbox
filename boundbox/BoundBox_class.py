@@ -254,7 +254,7 @@ class BoundBox:
         cv2.polylines(img, np.int32([points]), True, (0, 255, 0), thickness=2)
 
         if write_text:
-            cv2.putText(img, self.text_value, (self.p1.x, self.p1.y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+            cv2.putText(img, self.text_value, (self.p1.x+20, self.p1.y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                         (0, 0, 255), 1)
 
         if mark_coordinates:
