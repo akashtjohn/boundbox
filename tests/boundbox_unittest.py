@@ -204,7 +204,7 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(len(box_list[0]), 0)
 
-    def test_google_ocr_good_file(self):
+    def test_google_ocr_file_without_x_coordinate(self):
         """
         test google ocr response constructor
         this method test response with only x or y coordinate
@@ -230,3 +230,71 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(noisy_image_box.p1.x, 0)
         self.assertEqual(noisy_image_box.p4.x, 0)
         self.assertEqual(noisy_image_box.text_value, 'esseract')
+
+    def test_azure_ocr_good_file(self):
+        """
+        test google ocr response constructor
+        this method test good response with all coordinates
+        """
+
+        azure_ocr_good_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                           'test_samples', 'azure_ocr', 'good_text.json')
+
+        with open(azure_ocr_good_file, 'rb') as sample_response:
+            response_json = json.load(sample_response)
+
+        # test with merge line #####################################
+
+        box_list_merged_line = BoundBox.azure_read_boxes(response_json, merge_line=True)
+
+        # remove boxes with empty string
+        valid_text_boxes = [i for i in box_list_merged_line[0] if i.text_value]
+
+        # box containing the text 'Noisy', it should be the first one
+        noisy_image_box = valid_text_boxes[0]
+
+        self.assertEqual(noisy_image_box.p1.x, 75)
+        self.assertEqual(noisy_image_box.p1.y, 25)
+        self.assertEqual(noisy_image_box.p2.x, 426)
+        self.assertEqual(noisy_image_box.p2.y, 28)
+        self.assertEqual(noisy_image_box.p3.x, 424)
+        self.assertEqual(noisy_image_box.p3.y, 94)
+        self.assertEqual(noisy_image_box.p4.x, 71)
+        self.assertEqual(noisy_image_box.p4.y, 87)
+        self.assertEqual(noisy_image_box.text_value, 'Noisy image')
+
+        # test without merge line ######################
+
+        box_list_line = BoundBox.azure_read_boxes(response_json)
+
+        # remove boxes with empty string
+        valid_text_boxes = [i for i in box_list_line[0] if i.text_value]
+
+        # box containing the text 'Noisy', it should be the first one
+        noisy_box = valid_text_boxes[0]
+
+        self.assertEqual(noisy_box.p1.x, 73)
+        self.assertEqual(noisy_box.p1.y, 27)
+        self.assertEqual(noisy_box.p2.x, 228)
+        self.assertEqual(noisy_box.p2.y, 25)
+        self.assertEqual(noisy_box.p3.x, 225)
+        self.assertEqual(noisy_box.p3.y, 91)
+        self.assertEqual(noisy_box.p4.x, 71)
+        self.assertEqual(noisy_box.p4.y, 86)
+        self.assertEqual(noisy_box.text_value, 'Noisy')
+
+    def test_azure_blank_file(self):
+        """
+        test google ocr response constructor
+        this method test response for image with no text (empty response)
+        """
+
+        azure_ocr_blank_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                             'test_samples', 'azure_ocr', 'blank_image.json')
+
+        with open(azure_ocr_blank_file, 'rb') as sample_response:
+            response_json = json.load(sample_response)
+
+        box_list = BoundBox.azure_read_boxes(response_json)
+
+        self.assertEqual(len(box_list[0]), 0)

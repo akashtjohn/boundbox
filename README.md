@@ -135,7 +135,8 @@ returns a list of list, each nested list contains results from individual page
     >>> Noisy
 
 Azure read returns both line by line and word by word results.
-The ***merge_line*** parameter can be used to select **line** or **word** results
+The ***merge_line*** parameter can be used to select **line** or **word** results.
+ By default ***merge_line*** is false
 
 ###### note: Azure has various OCR services, Currently boundbox supports only [Azure Read](https://centraluseuap.dev.cognitive.microsoft.com/docs/services/computer-vision-v3-2/operations/5d986960601faab4bf452005)
 
