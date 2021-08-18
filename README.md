@@ -141,6 +141,32 @@ The ***merge_line*** parameter can be used to select **line** or **word** result
 ###### note: Azure has various OCR services, Currently boundbox supports only [Azure Read](https://centraluseuap.dev.cognitive.microsoft.com/docs/services/computer-vision-v3-2/operations/5d986960601faab4bf452005)
 
 
+### Image Contour 
+
+cv2 image [contour](https://docs.opencv.org/3.4/d4/d73/tutorial_py_contours_begin.html) can be converted to BoundBox object. For this the contour must be 
+[approximated polygon](https://www.geeksforgeeks.org/python-detect-polygons-in-an-image-using-opencv/)
+with 4 sided. 
+
+            box = BoundBox.box_from_contour(contour_array)
+
+### From 2D numpy array or list
+2D numpy array or 2D list can be directly converted to BoundBox objects
+    
+        array = [[429, 48], [113, 96], [129, 415], [430, 423]]
+        box = BoundBox.box_from_array(array, sort_corners=True)
+
+The parameter ***sort_corners*** will rearrange the points to default BoundBox format (
+p1 will be top left, p2 top right, p3 bottom right, p4 bottom left ) 
+
+Default value for ***sort_corners*** is False. It is recommended to keep ***sort_corners = True*** 
+for image operations.
+
+###
+
+
+
+
+
 
 
 

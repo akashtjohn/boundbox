@@ -11,28 +11,14 @@ import cv2
 import json
 import os
 from boundbox.image_utils import display
+import numpy as np
+#
+# contour_array = np.array([[[429, 48]], [[113, 96]], [[129, 415]], [[430, 423]]])
+# box = BoundBox.box_from_contour(contour_array)
+# box.plot_box()
 
-google_ocr_good_file = "/home/wasp/WorkingDirectory/boundbox_0.1/boundbox/tests/test_samples/azure_ocr/good_text.json"
+array = [[429, 48], [113, 96], [129, 415], [430, 423]]
 
-with open(google_ocr_good_file, 'rb') as sample_response:
-    response_json = json.load(sample_response)
+box = BoundBox.box_from_array(array)
 
-box_list = BoundBox.azure_read_boxes(response_json, merge_line=True)
-box = box_list[0][0]
-
-# corner points of the boxes are accessed by variable 'p1', 'p2', 'p3', 'p4'
-
-print(box.p1.x, box.p1.y)
-print(box.p2.x, box.p2.y)
-print(box.p3.x, box.p3.y)
-print(box.p4.x, box.p4.y)
-
-# text value is accessed by 'text_value'
-
-print(box.text_value)
-img = cv2.imread("/home/wasp/Downloads/test.png")
-# draw the box on the image
-drawn = box.draw_box(img, annotate_points=True)
-print('asdf')
-cv2.imwrite('result.png', drawn)
-display(drawn, keep_size=True)
+print("done")

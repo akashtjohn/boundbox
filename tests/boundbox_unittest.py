@@ -15,6 +15,7 @@ import unittest
 import warnings
 import os
 import json
+import numpy as np
 
 import cv2
 from pytesseract import image_to_data, Output
@@ -298,3 +299,53 @@ class MyTestCase(unittest.TestCase):
         box_list = BoundBox.azure_read_boxes(response_json)
 
         self.assertEqual(len(box_list[0]), 0)
+
+    def test_box_from_array(self):
+        """
+        test array to BoundBox object with and without corner sorting
+        """
+
+        # without sort corners ################################
+
+        array = [[429, 48], [113, 96], [129, 415], [430, 423]]
+        box = BoundBox.box_from_array(array)
+
+        self.assertEqual(box.p1.x, 429)
+        self.assertEqual(box.p1.y, 48)
+        self.assertEqual(box.p2.x, 113)
+        self.assertEqual(box.p2.y, 96)
+        self.assertEqual(box.p3.x, 129)
+        self.assertEqual(box.p3.y, 415)
+        self.assertEqual(box.p4.x, 430)
+        self.assertEqual(box.p4.y, 423)
+
+        # with corner sorting #################################
+
+        array = [[429, 48], [113, 96], [129, 415], [430, 423]]
+        box = BoundBox.box_from_array(array, sort_corners=True)
+
+        self.assertEqual(box.p1.x, 113)
+        self.assertEqual(box.p1.y, 96)
+        self.assertEqual(box.p2.x, 429)
+        self.assertEqual(box.p2.y, 48)
+        self.assertEqual(box.p3.x, 430)
+        self.assertEqual(box.p3.y, 423)
+        self.assertEqual(box.p4.x, 129)
+        self.assertEqual(box.p4.y, 415)
+
+    def test_image_from_contour(self):
+        """
+        from 4 sided polygon contour to BoundBox object
+        """
+
+        contour_array = np.array([[[429, 48]], [[113, 96]], [[129, 415]], [[430, 423]]])
+        box = BoundBox.box_from_contour(contour_array)
+
+        self.assertEqual(box.p1.x, 113)
+        self.assertEqual(box.p1.y, 96)
+        self.assertEqual(box.p2.x, 429)
+        self.assertEqual(box.p2.y, 48)
+        self.assertEqual(box.p3.x, 430)
+        self.assertEqual(box.p3.y, 423)
+        self.assertEqual(box.p4.x, 129)
+        self.assertEqual(box.p4.y, 415)

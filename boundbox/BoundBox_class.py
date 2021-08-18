@@ -7,6 +7,7 @@ Created on Mon Jul 24 01:30:24 2021
 
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
 from .Point_class import Point
 
@@ -100,6 +101,77 @@ class BoundBox:
         p4 = Point(top_left.x, bottom_right.y)
 
         return BoundBox(p1, p2, p3, p4, text_value)
+
+    @staticmethod
+    def sort_corners(p1, p2, p3, p4):
+        """
+        sort the corners based on top-right, top-left, bottom-right, bottom left as p1, p2, p3 and p4
+        :param p1: point 1
+        :param p2: point 2
+        :param p3: point 3
+        :param p4: point 4
+        :return: points in sorted order
+        """
+
+        # TODO : implement a mechanism to check points are on the same line
+
+        box = np.zeros((4, 2), dtype="int32")
+        box[0] = [p1.x, p1.y]
+        box[1] = [p2.x, p2.y]
+        box[2] = [p3.x, p3.y]
+        box[3] = [p4.x, p4.y]
+
+        p_sum = box.sum(axis=1)
+        p_diff = np.diff(box, axis=1)
+
+        # points with max sum is bottom right and least sum is top left
+        min_sum = min(p_sum)
+        max_sum = max(p_sum)
+
+        min_sum_index = np.where(p_sum == min_sum)[0]
+        max_sum_index = np.where(p_sum == max_sum)[0]
+
+        # points with least sum is top left
+        if len(min_sum_index) > 1:
+            # if more than one value with the same min sum exists we take the one with minimum y - x
+
+            top_left_index = min_sum_index[0] if p_diff[min_sum_index[0]] < p_diff[min_sum_index[1]] \
+                else min_sum_index[1]
+
+        else:
+            top_left_index = min_sum_index[0]
+
+        if len(max_sum_index) > 1:
+            # if more than one value with the same max sum exists we take the one with maximum y - x bottom right
+            bottom_right_index = max_sum_index[0] if p_diff[max_sum_index[0]] > p_diff[max_sum_index[1]] \
+                else max_sum_index[1]
+        else:
+            bottom_right_index = max_sum_index[0]
+
+        top_left = box[top_left_index]
+        bottom_right = box[bottom_right_index]
+
+        remaining_box = np.delete(box, [top_left_index, bottom_right_index], axis=0)
+
+        p_diff = np.diff(remaining_box, axis=1)
+
+        # "y-x" is largest for bottom left and lowest for top right
+        min_diff = min(p_diff)
+
+        top_right_index = np.where(p_diff == min_diff)[0][0]
+        # is one is top right the remaining one is top left
+        bottom_left_index = 1 - top_right_index
+
+        top_right = remaining_box[top_right_index]
+        bottom_left = remaining_box[bottom_left_index]
+
+        new_p1 = Point(top_left[0], top_left[1])
+        new_p2 = Point(top_right[0], top_right[1])
+
+        new_p3 = Point(bottom_right[0], bottom_right[1])
+        new_p4 = Point(bottom_left[0], bottom_left[1])
+
+        return new_p1, new_p2, new_p3, new_p4
 
     @classmethod
     def pytesseract_boxes(cls, data):
@@ -238,6 +310,42 @@ class BoundBox:
 
         return page_list
 
+    @classmethod
+    def box_from_array(cls, array, sort_corners=False):
+        """
+        numpy array of points to BoundBox object
+        @param : array, eg : [[429  48], [113  96], [129 415], [430 423]]
+        @param : sort_corners: if the array coordinates need to be arranged to BoundBox format
+        ( p1 - top left, p4 bottom right etc.), sort_corners flag can be kept as True
+        """
+
+        p1 = Point(array[0][0], array[0][1])
+        p2 = Point(array[1][0], array[1][1])
+
+        p3 = Point(array[2][0], array[2][1])
+        p4 = Point(array[3][0], array[3][1])
+
+        if sort_corners:
+            p1, p2, p3, p4 = cls.sort_corners(p1, p2, p3, p4)
+
+        return cls(p1, p2, p3, p4)
+
+    @classmethod
+    def box_from_contour(cls, contour):
+        """
+        converted contours with 4 points into BoundBox object
+        Before passing to the function, the contour must be approximated to a 4 sided polygon
+        eg. contour: [[[429  48]],, [[113  96]],, [[129 415]],, [[430 423]]]
+        """
+
+        try:
+            points = contour.reshape(4, 2)
+        except ValueError:
+            raise IndexError('need to approximate the contour to 4 sided polygon, currently contains {} ' 
+                             'sides'. format(len(contour)))
+
+        return cls.box_from_array(points, sort_corners=True)
+
     def draw_box(self, img, write_text=True, mark_coordinates=False, annotate_points=False):
         """
 
@@ -278,6 +386,32 @@ class BoundBox:
                         0.5, (255, 0, 0), 1)
 
         return img
+
+    def plot_box(self):
+
+        np_array = self.np_array
+        array = np_array.tolist()
+        # repeat the first point to create a 'closed loop'
+        array.append(array[0])
+
+        # create lists of x and y values
+        xs, ys = zip(*array)
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+
+        # start y axis from top
+        plt.gca().invert_yaxis()
+
+        # change marking of x axis to top
+        ax.xaxis.tick_top()
+
+        for i, p in enumerate(['p1', 'p2', 'p3', 'p4']):
+            ax.annotate(p, (xs[i], ys[i]))
+
+        plt.plot(xs, ys)
+        plt.grid()
+        plt.show()
 
     @property
     def p1(self):
@@ -359,3 +493,12 @@ class BoundBox:
         """
         self._text_value = value
 
+    @property
+    def np_array(self):
+        box = np.zeros((4, 2), dtype="int32")
+        box[0] = [self._p1.x, self._p1.y]
+        box[1] = [self._p2.x, self._p2.y]
+        box[2] = [self._p3.x, self._p3.y]
+        box[3] = [self._p4.x, self._p4.y]
+
+        return box
